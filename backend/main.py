@@ -18,3 +18,23 @@ def home():
 @app.get("/health")
 def health_check():
     return{"status": "Healthy"}
+
+@app.get("/players")
+def get_players():
+    return [
+        {
+            "name": "Josh Allen",
+            "team": "BUF",
+            "position": "QB",
+        },
+        {
+            "name": "Bo Nix",
+            "team": "DEN",
+            "position": "QB",
+        },
+        {
+            "name": "Dak Prescott",
+            "team": "DAL",
+            "position": "QB",
+        }
+    ]

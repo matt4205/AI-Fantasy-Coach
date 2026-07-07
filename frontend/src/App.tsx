@@ -1,22 +1,21 @@
 import { useEffect, useState } from "react";
 
-function App(){
-  const [apiMessage, setApiMessage] = useState("");
+function App() {
+  const [players, setPlayers] = useState<any[]>([]);
 
   useEffect(() => {
-    fetch("http://127.0.0.1:8000/")
-    .then((res) => res.json())
-    .then((data) => setApiMessage(data.message))
-    .catch((error) => {
-      console.error("API error:", error);
-      setApiMessage("Could not connect to backend");
-    });
-}, []);
+    fetch("http://127.0.0.1:8000/players")
+      .then((res) => res.json())
+      .then((data) => setPlayers(data))
+      .catch((error) => {
+        console.error("API error:", error);
+      });
+  }, []);
 
   return (
     <main style={{ padding: "2rem", fontFamily: "Arial" }}>
       <h1>AI Fantasy Coach</h1>
-      <p>Thsi is the AI powered coach for Fantasy</p>
+      <p>This is the AI powered coach for Fantasy</p>
 
       <div
         style={{
@@ -26,8 +25,15 @@ function App(){
           borderRadius: "8px",
         }}
       >
-        <h2>Backend Status</h2>
-        <p>{apiMessage}</p>
+        <h3>Players</h3>
+
+        {players.map((player) => (
+          <div key={player.name}>
+            <p>Name: {player.name}</p>
+            <p>Team: {player.team}</p>
+            <p>Position: {player.position}</p>
+          </div>
+        ))}
       </div>
     </main>
   );
