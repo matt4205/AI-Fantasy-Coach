@@ -20,21 +20,34 @@ def health_check():
     return{"status": "Healthy"}
 
 @app.get("/players")
-def get_players():
-    return [
+def get_players(name: str):
+    players = [
         {
-            "name": "Josh Allen",
-            "team": "BUF",
-            "position": "QB",
-        },
-        {
-            "name": "Bo Nix",
-            "team": "DEN",
-            "position": "QB",
-        },
-        {
-            "name": "Dak Prescott",
-            "team": "DAL",
-            "position": "QB",
-        }
-    ]
+        "name": "Josh Allen",
+        "team": "BUF",
+        "position": "QB",
+    },
+    {
+        "name": "Bo Nix",
+        "team": "DEN",
+        "position": "QB",
+    },
+    {
+        "name": "Dak Prescott",
+        "team": "DAL",
+        "position": "QB",
+    },
+    {
+        "name": "Josh Jacobs",
+        "team": "GB",
+        "position": "RB",
+    }
+]
+
+    results = []
+
+    for player in players:
+        if name.lower() in player["name"].lower():
+            results.append(player)
+
+    return results
