@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+import requests
 
 app = FastAPI()
 
@@ -21,33 +22,27 @@ def health_check():
 
 @app.get("/players")
 def get_players(name: str):
-    players = [
-        {
-        "name": "Josh Allen",
-        "team": "BUF",
-        "position": "QB",
-    },
-    {
-        "name": "Bo Nix",
-        "team": "DEN",
-        "position": "QB",
-    },
-    {
-        "name": "Dak Prescott",
-        "team": "DAL",
-        "position": "QB",
-    },
-    {
-        "name": "Josh Jacobs",
-        "team": "GB",
-        "position": "RB",
-    }
-]
+    response = requests.get("https://api.sleeper.app/v1/players/nfl", timeout=15,)
 
+    response.raise_for_status()
+
+    players = response.json()
     results = []
 
-    for player in players:
-        if name.lower() in player["name"].lower():
-            results.append(player)
+    for player_id, player in players.items():
+        first_name = player.get("first_name") or ""
+        last_name = player.get("last_name") or ""
+        full_name = f"{first_name} {last_name}".strip()
+
+        if name.lower() in full_name.lower():
+            results.append({
+                "player_id": player_id,
+                "name": full_name,
+                "team": player.get("team"),
+                "position": player.get("position"),
+            })
+
+        if len(results) >= 20:
+            break
 
     return results

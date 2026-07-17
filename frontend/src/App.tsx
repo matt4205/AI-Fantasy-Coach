@@ -43,7 +43,7 @@ function App() {
         <h3>Players</h3>
 
         {players.map((player) => (
-          <div key={player.name}>
+          <div key={player.player_id}>
             <p>Name: {player.name}</p>
             <p>Team: {player.team}</p>
             <p>Position: {player.position}</p>
