@@ -167,6 +167,77 @@ function App() {
     });
   }
 
+  function removePlayerFromTeam(player: Player){
+    setTeam((currentTeam) => {
+      if (currentTeam.QB?.player_id === player.player_id){
+        return {
+          ...currentTeam,
+          QB: null
+        };
+      }
+
+      if (currentTeam.RB1?.player_id === player.player_id){
+        return {
+          ...currentTeam,
+          RB1: null
+        };
+      }
+
+      if (currentTeam.RB2?.player_id === player.player_id){
+        return {
+          ...currentTeam,
+          RB2: null
+        };
+      }
+
+      if (currentTeam.WR1?.player_id === player.player_id){
+        return {
+          ...currentTeam,
+          WR1: null
+        };
+      }
+
+      if (currentTeam.WR2?.player_id === player.player_id){
+        return {
+          ...currentTeam,
+          WR2: null
+        };
+      }
+
+      if (currentTeam.TE?.player_id === player.player_id){
+        return {
+          ...currentTeam,
+          TE: null
+        };
+      }
+
+      if (currentTeam.FLEX?.player_id === player.player_id){
+        return {
+          ...currentTeam,
+          FLEX: null
+        };
+      }
+
+      if (currentTeam.K?.player_id === player.player_id){
+        return {
+          ...currentTeam,
+          K: null
+        };
+      }
+
+      if (currentTeam.DEF?.player_id === player.player_id){
+        return {
+          ...currentTeam,
+          DEF: null
+        };
+      }
+
+      return {
+        ...currentTeam,
+        BENCH: currentTeam.BENCH.filter((benchPlayer) => benchPlayer.player_id !== player.player_id)};
+    });
+  }
+
   return (
     <main style={{ padding: "2rem", fontFamily: "Arial" }}>
       <h1>AI Fantasy Coach</h1>
@@ -276,75 +347,161 @@ function App() {
 
         <div>
           <h3>QB</h3>
-          <p>
-            {team.QB ? `${team.QB.name} - ${team.QB.team ?? "No team"}` : "Empty"}
-          </p>
+
+          {team.QB ? (
+            <div>
+              <p>
+                {team.QB.name} - {team.QB.team ?? "No team"}
+              </p>
+
+              <button type="button" onClick={() => removePlayerFromTeam(team.QB!)}>Remove</button>
+            </div>
+          ):(
+            <p>Empty</p>
+          )}
         </div>
 
         <div>
           <h3>RB1</h3>
-          <p>
-            {team.RB1 ? `${team.RB1.name} - ${team.RB1.team ?? "No team"}`: "Empty"}
-          </p>
+
+          {team.RB1 ? (
+            <div>
+              <p> 
+                {team.RB1.name} - {team.RB1.team ?? "No team"}
+              </p>
+
+              <button type="button" onClick={() => removePlayerFromTeam(team.RB1!)}>Remove</button>
+            </div>
+          ) : (
+            <p>Empty</p>
+          )}
         </div>
-        
+
         <div>
           <h3>RB2</h3>
-          <p>
-            {team.RB2 ? `${team.RB2.name} - ${team.RB2.team ?? "No team"}`: "Empty"}
-          </p>
+
+          {team.RB2 ? (
+            <div>
+              <p>
+                {team.RB2.name} - {team.RB2.team ?? "No team"}
+              </p>
+
+              <button type="button" onClick={() => removePlayerFromTeam(team.RB2!)}>Remove</button>
+            </div>
+          ) : (
+            <p>Empty</p>
+          )}
         </div>
 
         <div>
           <h3>WR1</h3>
-          <p>
-            {team.WR1 ? `${team.WR1.name} - ${team.WR1.team ?? "No team"}`: "Empty"}
-          </p>
+
+          {team.WR1 ? (
+            <div>
+              <p>
+                {team.WR1.name} - {team.WR1.team ?? "No team"}
+              </p>
+
+              <button type="button" onClick={() => removePlayerFromTeam(team.WR1!)}>Remove</button>
+            </div>
+          ) : (
+            <p>Empty</p>
+          )}
         </div>
 
         <div>
           <h3>WR2</h3>
-          <p>
-            {team.WR2 ? `${team.WR2.name} - ${team.WR2.team ?? "No team"}`: "Empty"}
-          </p>
+
+          {team.WR2 ? (
+            <div>
+              <p>
+                {team.WR2.name} - {team.WR2.team ?? "No team"}
+              </p>
+
+              <button type="button" onClick={() => removePlayerFromTeam(team.WR2!)}>Remove</button>
+            </div>
+          ) : (
+            <p>Empty</p>
+          )}
         </div>
 
         <div>
           <h3>TE</h3>
-          <p>
-            {team.TE ? `${team.TE.name} - ${team.TE.team ?? "No team"}`: "Empty"}
-          </p>
+
+          {team.TE ? (
+            <div>
+              <p>
+                {team.TE.name} - {team.TE.team ?? "No team"}
+              </p>
+
+              <button type="button" onClick={() => removePlayerFromTeam(team.TE!)}>Remove</button>
+            </div>
+          ) : (
+            <p>Empty</p>
+          )}
         </div>
 
         <div>
           <h3>FLEX</h3>
-          <p>
-            {team.FLEX ? `${team.FLEX.name} - ${team.FLEX.team ?? "No team"}`: "Empty"}
-          </p>
+
+          {team.FLEX ? (
+            <div>
+              <p>
+                {team.FLEX.name} - {team.FLEX.position ?? "No position"} - {team.FLEX.team ?? "No Team"}
+              </p>
+
+              <button type="button" onClick={() => removePlayerFromTeam(team.FLEX!)}>Remove</button>
+            </div>
+          ) :(
+            <p>Empty</p>
+          )}
         </div>
 
         <div>
           <h3>K</h3>
-          <p>
-            {team.K ? `${team.K.name} - ${team.K.team ?? "No team"}`: "Empty"}
-          </p>
+
+          {team.K ? (
+            <div>
+              <p>
+                {team.K.name} - {team.K.team ?? "No team"}
+              </p>
+
+              <button type="button" onClick={() => removePlayerFromTeam(team.K!)}>Remove</button>
+            </div>
+          ) : (
+            <p>Empty</p>
+          )}
         </div>
 
         <div>
           <h3>DEF</h3>
-          <p>
-            {team.DEF ? `${team.DEF.name} - ${team.DEF.team ?? "No team"}`: "Empty"}
-          </p>
+
+          {team.DEF ? (
+            <div>
+              <p>
+                {team.DEF.name} - ({team.DEF.team})
+              </p>
+
+              <button type="button" onClick={() => removePlayerFromTeam(team.DEF!)}>Remove</button>
+            </div>
+          ) : (
+            <p>Empty</p>
+          )}
         </div>
 
         <div>
           <h3>BENCH</h3>
-          {team.BENCH.length === 0 && <p>No bench players</p>}
+
+          {team.BENCH.length === 0 && <p>Bench is empty</p>}
+
           {team.BENCH.map((player) => (
-            <p key={player.player_id}>
-              {player.name} - {player.position ?? "No position"} - {" "}
-              {player.team ?? "No team"}
-            </p>
+            <div key ={player.player_id}>
+            <span>
+              {player.name} - {player.position ?? "No positon"} - {" "} {player.team ?? "No team"}
+            </span>
+            
+            <button type="button" onClick={() => removePlayerFromTeam(player)}>Remove</button>
+            </div>
           ))}
         </div>
       </section>
