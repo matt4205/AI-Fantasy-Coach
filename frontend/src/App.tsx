@@ -22,6 +22,18 @@ type Roster = {
   BENCH: Player[];
 };
 
+type TeamSlot =
+  | ""
+  | "QB"
+  | "RB1"
+  | "RB2"
+  | "WR1"
+  | "WR2"
+  | "TE"
+  | "FLEX"
+  | "K"
+  | "DEF";
+
 function App() {
   const [players, setPlayers] = useState<Player[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
@@ -42,6 +54,7 @@ function App() {
     DEF: null,
     BENCH: [],
 });
+  const [selectedSlot, setSelectedSlot] = useState<TeamSlot>("");
 
   function searchPlayers(){
     setisLoading(true);
@@ -238,6 +251,187 @@ function App() {
     });
   }
 
+  function movePlayerOnTeam(player: Player){
+    setTeam((currentTeam) => {
+
+      if (currentTeam.QB?.player_id === player.player_id){
+        return {
+          ...currentTeam,
+          QB: null,
+          BENCH: [...currentTeam.BENCH, player]
+        };
+      }
+
+      if (currentTeam.RB1?.player_id === player.player_id){
+        return {
+          ...currentTeam,
+          RB1: null,
+          BENCH: [...currentTeam.BENCH,player]
+        };
+      }
+
+      if (currentTeam.RB2?.player_id === player.player_id){
+        return {
+          ...currentTeam,
+          RB2: null,
+          BENCH: [...currentTeam.BENCH, player]
+        };
+      }
+
+      if (currentTeam.WR1?.player_id === player.player_id){
+        return {
+          ...currentTeam,
+          WR1: null,
+          BENCH: [...currentTeam.BENCH, player]
+        };
+      }
+
+      if (currentTeam.WR2?.player_id === player.player_id){
+        return {
+          ...currentTeam,
+          WR2: null,
+          BENCH: [...currentTeam.BENCH, player]
+        };
+      }
+
+      if (currentTeam.TE?.player_id === player.player_id){
+        return {
+          ...currentTeam,
+          TE: null,
+          BENCH: [...currentTeam.BENCH, player]
+        };
+      }
+
+      if (currentTeam.FLEX?.player_id === player.player_id){
+        return {
+          ...currentTeam,
+          FLEX: null,
+          BENCH: [...currentTeam.BENCH, player]
+        };
+      }
+
+      if (currentTeam.K?.player_id === player.player_id){
+        return {
+          ...currentTeam,
+          K: null,
+          BENCH: [...currentTeam.BENCH, player]
+        };
+      }
+
+      if (currentTeam.DEF?.player_id === player.player_id){
+        return {
+          ...currentTeam,
+          DEF: null,
+          BENCH: [...currentTeam.BENCH, player]
+        };
+      }
+
+      return currentTeam;
+    })
+  }
+
+  function moveBenchToTeam(player: Player, slot: TeamSlot){
+    setTeam((currentTeam) => {
+
+      const isOnBench = currentTeam.BENCH.some((benchPlayer) => benchPlayer.player_id === player.player_id);
+      if (!isOnBench) {
+        return currentTeam;
+      }
+
+      if (slot === "QB"){
+        if (currentTeam.QB === null && player.position === "QB"){
+          return {
+            ...currentTeam,
+            QB: player,
+            BENCH: currentTeam.BENCH.filter((benchPlayer) => benchPlayer.player_id !== player.player_id),
+          };
+        }
+      }
+
+      if (slot === "RB1"){
+        if (currentTeam.RB1 === null && player.position === "RB"){
+          return{
+            ...currentTeam,
+            RB1: player,
+            BENCH: currentTeam.BENCH.filter((benchPlayer) => benchPlayer.player_id !== player.player_id),
+          };
+        }
+      }
+
+      if (slot === "RB2"){
+        if (currentTeam.RB2 === null && player.position === "RB"){
+          return{
+            ...currentTeam,
+            RB2: player,
+            BENCH: currentTeam.BENCH.filter((benchPlayer) => benchPlayer.player_id !== player.player_id),
+          };
+        }
+      }
+
+      if (slot === "WR1"){
+        if (currentTeam.WR1 === null && player.position === "WR"){
+          return{
+            ...currentTeam,
+            WR1: player,
+            BENCH: currentTeam.BENCH.filter((benchPlayer) => benchPlayer.player_id !== player.player_id),
+          };
+        }
+      }
+
+      if (slot === "WR2"){
+        if (currentTeam.WR2 === null && player.position === "WR"){
+          return{
+            ...currentTeam,
+            WR2: player,
+            BENCH: currentTeam.BENCH.filter((benchPlayer) => benchPlayer.player_id !== player.player_id),
+          };
+        }
+      }
+
+      if (slot === "TE"){
+        if (currentTeam.TE === null && player.position === "TE"){
+          return{
+            ...currentTeam,
+            TE: player,
+            BENCH: currentTeam.BENCH.filter((benchPlayer) => benchPlayer.player_id !== player.player_id),
+          };
+        }
+      }
+
+      if (slot === "FLEX"){
+        if (currentTeam.FLEX === null && ["RB", "WR", "TE"].includes(player.position ?? "")){
+          return{
+            ...currentTeam,
+            FLEX: player,
+            BENCH: currentTeam.BENCH.filter((benchPlayer) => benchPlayer.player_id !== player.player_id),
+          };
+        }
+      }
+
+      if (slot === "K"){
+        if (currentTeam.K === null && player.position === "K"){
+          return{
+            ...currentTeam,
+            K: player,
+            BENCH: currentTeam.BENCH.filter((benchPlayer) => benchPlayer.player_id !== player.player_id),
+          };
+        }
+      }
+
+      if (slot === "DEF"){
+        if (currentTeam.DEF === null && player.position === "DEF"){
+          return{
+            ...currentTeam,
+            DEF: player,
+            BENCH: currentTeam.BENCH.filter((benchPlayer) => benchPlayer.player_id !== player.player_id),
+          };
+        }
+      }
+
+      return currentTeam;
+    });
+  }
+
   return (
     <main style={{ padding: "2rem", fontFamily: "Arial" }}>
       <h1>AI Fantasy Coach</h1>
@@ -355,6 +549,9 @@ function App() {
               </p>
 
               <button type="button" onClick={() => removePlayerFromTeam(team.QB!)}>Remove</button>
+
+              <button type="button" onClick={() => movePlayerOnTeam(team.QB!)}>Move to Bench</button>
+
             </div>
           ):(
             <p>Empty</p>
@@ -371,6 +568,9 @@ function App() {
               </p>
 
               <button type="button" onClick={() => removePlayerFromTeam(team.RB1!)}>Remove</button>
+
+              <button type="button" onClick={() => movePlayerOnTeam(team.RB1!)}>Move to Bench</button>
+
             </div>
           ) : (
             <p>Empty</p>
@@ -387,6 +587,9 @@ function App() {
               </p>
 
               <button type="button" onClick={() => removePlayerFromTeam(team.RB2!)}>Remove</button>
+
+              <button type="button" onClick={() => movePlayerOnTeam(team.RB2!)}>Move to Bench</button>
+
             </div>
           ) : (
             <p>Empty</p>
@@ -403,6 +606,9 @@ function App() {
               </p>
 
               <button type="button" onClick={() => removePlayerFromTeam(team.WR1!)}>Remove</button>
+
+              <button type="button" onClick={() => movePlayerOnTeam(team.WR1!)}>Move to Bench</button>
+
             </div>
           ) : (
             <p>Empty</p>
@@ -419,6 +625,9 @@ function App() {
               </p>
 
               <button type="button" onClick={() => removePlayerFromTeam(team.WR2!)}>Remove</button>
+
+              <button type="button" onClick={() => movePlayerOnTeam(team.WR2!)}>Move to Bench</button>
+
             </div>
           ) : (
             <p>Empty</p>
@@ -435,6 +644,9 @@ function App() {
               </p>
 
               <button type="button" onClick={() => removePlayerFromTeam(team.TE!)}>Remove</button>
+
+              <button type="button" onClick={() => movePlayerOnTeam(team.TE!)}>Move to Bench</button>
+
             </div>
           ) : (
             <p>Empty</p>
@@ -451,6 +663,9 @@ function App() {
               </p>
 
               <button type="button" onClick={() => removePlayerFromTeam(team.FLEX!)}>Remove</button>
+
+              <button type="button" onClick={() => movePlayerOnTeam(team.FLEX!)}>Move to Bench</button>
+
             </div>
           ) :(
             <p>Empty</p>
@@ -467,6 +682,9 @@ function App() {
               </p>
 
               <button type="button" onClick={() => removePlayerFromTeam(team.K!)}>Remove</button>
+
+              <button type="button" onClick={() => movePlayerOnTeam(team.K!)}>Move to Bench</button>
+
             </div>
           ) : (
             <p>Empty</p>
@@ -483,6 +701,9 @@ function App() {
               </p>
 
               <button type="button" onClick={() => removePlayerFromTeam(team.DEF!)}>Remove</button>
+
+              <button type="button" onClick={() => movePlayerOnTeam(team.DEF!)}>Move to Bench</button>
+
             </div>
           ) : (
             <p>Empty</p>
@@ -501,6 +722,19 @@ function App() {
             </span>
             
             <button type="button" onClick={() => removePlayerFromTeam(player)}>Remove</button>
+            <select value={selectedSlot} onChange={(event) => {setSelectedSlot(event.target.value as TeamSlot)}}>
+              <option value="">Choose a positon</option>
+              <option value="QB">QB</option>
+              <option value="RB1">RB1</option>
+              <option value="RB2">RB2</option>
+              <option value="WR1">WR1</option>
+              <option value="WR2">WR2</option>
+              <option value="TE">TE</option>
+              <option value="FLEX">FLEX</option>
+              <option value="K">K</option>
+              <option value="DEF">DEF</option>
+              </select>
+              <button type="button" onClick={() => moveBenchToTeam(player, selectedSlot)}>Move to team</button>
             </div>
           ))}
         </div>
