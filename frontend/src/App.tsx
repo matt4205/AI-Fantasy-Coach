@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import PLayerCard from "./components/PlayerCard";
 import "./App.css";
 import type { Player, Roster, TeamSlot,} from "./types/fantasy";
@@ -12,7 +12,14 @@ function App() {
   const [hasSearched, sethasSearched] = useState(false);
   const [selectedPosition, setselectedPosition] = useState("");
   const [selectedTeam, setselectedTeam] = useState("");
-  const [team, setTeam] = useState<Roster>({
+  const [team, setTeam] = useState<Roster>(() => {
+    const savedRoster = localStorage.getItem("fantasyRoster");
+
+    if (savedRoster !== null) {
+      return JSON.parse(savedRoster);
+    }
+
+    return {
     QB: null,
     RB1: null,
     RB2: null,
@@ -23,7 +30,16 @@ function App() {
     K: null,
     DEF: null,
     BENCH: [],
+    };
+
 });
+
+  useEffect(() => {
+    localStorage.setItem(
+      "fantasyRoster",
+      JSON.stringify(team));
+  }, [team]);
+
 
   function searchPlayers(){
     setisLoading(true);
