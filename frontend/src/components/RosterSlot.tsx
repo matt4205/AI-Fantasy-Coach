@@ -23,6 +23,9 @@ function RosterSlot({
                         {player.name} - {player.position ?? "No position"} -{" "}
                         {player.team ?? "No team"}
                     </p>
+                    <p>
+                        Projected: {player.projected_points} pts
+                    </p>
 
                     <button type="button" onClick = {() => removePlayer(player)}>Remove</button>
 

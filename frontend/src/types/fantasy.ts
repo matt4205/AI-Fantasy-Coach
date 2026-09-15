@@ -3,6 +3,7 @@ export type Player = {
   name: string;
   team: string | null;
   position: string | null;
+  projected_points: number | null;
 };
 
 export type Roster = {

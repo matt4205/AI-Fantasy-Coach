@@ -1,6 +1,14 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 import requests
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
+
+fantasypros_api_key = os.getenv("FANTASYPROS_API_KEY")
+
+jerrygm_api_key = os.getenv("JERRYGM_API_KEY")
 
 app = FastAPI()
 players_cache = None
@@ -38,6 +46,24 @@ def get_players(name: str, position: str = "", team: str = ""):
          response.raise_for_status()
          players_cache = response.json()
 
+    jerry_response = requests.get(
+        "https://api.jerrygm.com/api/ext/v1/projections",
+        headers={
+            "x-api-key": jerrygm_api_key
+        },
+        params={
+            "horizon": "week",
+            "week": 2,
+        },
+        timeout=15
+    )
+
+    print("JerryGM status:", jerry_response.status_code)
+
+    jerry_response.raise_for_status()
+
+    jerry_players = jerry_response.json().get("players")
+
     results = []
 
     for player_id, player in players_cache.items():
@@ -56,16 +82,67 @@ def get_players(name: str, position: str = "", team: str = ""):
             team == ""
             or player.get("team") == team
         )
+
         
         if name_check and position_check and team_check:
+            projected_points = 0
+
+            for jerry_player in jerry_players:
+                if jerry_player.get("ids").get("sleeper") == player_id:
+                    projected_points = jerry_player.get("projectedPPG")
+                    break
+                
             results.append({
                 "player_id": player_id,
                 "name": full_name,
                 "team": player.get("team"),
                 "position": player.get("position"),
+                "projected_points": projected_points
             })
 
             if len(results) >= 20:
                 break
 
     return results
+
+@app.get("/test-projections")
+def test_projections():
+    response = requests.get(
+        "https://api.fantasypros.com/public/v2/json/nfl/2026/projections",
+        headers={
+            "x-api-key": fantasypros_api_key
+        },
+        params={
+            "week": 1,
+            "position": "RB",
+            "scoring": "PPR",
+        },
+        timeout=15,
+    )
+
+    print("FantasyPros status:", response.status_code)
+
+    response.raise_for_status()
+
+    return response.json()
+
+
+@app.get("/test-jerrygm")
+def jerry_projections():
+    response = requests.get(
+        "https://api.jerrygm.com/api/ext/v1/projections",
+        headers={
+            "x-api-key": jerrygm_api_key
+        },
+        params={
+            "horizon": "week",
+            "week": 2,
+        },
+        timeout=15
+    )
+
+    print("JerryGM status: ", response.status_code)
+
+    response.raise_for_status()
+
+    return response.json()

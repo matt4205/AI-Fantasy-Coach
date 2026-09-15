@@ -1,9 +1,4 @@
-type Player = {
-    player_id: string;
-    name: string;
-    team: string | null;
-    position: string | null;
-}
+import type { Player } from "../types/fantasy";
 
 type PlayerCardProp = {
     player: Player;
@@ -18,6 +13,9 @@ function PlayerCard({player, addToTeam}: PlayerCardProp){
                     <h3>{player.name}</h3>
                     <p>
                         {player.position ?? "no position"} |{" "} {player.team ?? "No current team"}
+                    </p>
+                    <p>
+                        Projected: {player.projected_points} pts
                     </p>
                 </div>
             </div>

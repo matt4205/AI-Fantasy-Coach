@@ -17,8 +17,13 @@ function BenchPlayer({
     return (
         <div>
             <span>
-                {player.name} = {player.position ?? "No position"} -{" "}
-                {player.team ?? "No team"}
+                <p>
+                    {player.name} = {player.position ?? "No position"} -{" "}
+                    {player.team ?? "No team"}
+                </p>
+                <p>
+                    Projected: {player.projected_points} pts
+                </p>
             </span>
 
             <button type="button" onClick={() => removePlayer(player)}>Remove</button>

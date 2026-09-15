@@ -31,7 +31,6 @@ function App() {
     DEF: null,
     BENCH: [],
     };
-
 });
 
   useEffect(() => {
