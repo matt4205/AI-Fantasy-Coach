@@ -6,8 +6,6 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-fantasypros_api_key = os.getenv("FANTASYPROS_API_KEY")
-
 jerrygm_api_key = os.getenv("JERRYGM_API_KEY")
 
 app = FastAPI()
@@ -46,6 +44,16 @@ def get_players(name: str, position: str = "", team: str = ""):
          response.raise_for_status()
          players_cache = response.json()
 
+    nfl_response = requests.get(
+        "https://api.sleeper.app/v1/state/nfl",
+        timeout=15,
+    )
+
+
+    nfl_response.raise_for_status()
+
+    current_week = nfl_response.json().get("week")
+
     jerry_response = requests.get(
         "https://api.jerrygm.com/api/ext/v1/projections",
         headers={
@@ -53,7 +61,7 @@ def get_players(name: str, position: str = "", team: str = ""):
         },
         params={
             "horizon": "week",
-            "week": 2,
+            "week": current_week,
         },
         timeout=15
     )
@@ -104,45 +112,3 @@ def get_players(name: str, position: str = "", team: str = ""):
                 break
 
     return results
-
-@app.get("/test-projections")
-def test_projections():
-    response = requests.get(
-        "https://api.fantasypros.com/public/v2/json/nfl/2026/projections",
-        headers={
-            "x-api-key": fantasypros_api_key
-        },
-        params={
-            "week": 1,
-            "position": "RB",
-            "scoring": "PPR",
-        },
-        timeout=15,
-    )
-
-    print("FantasyPros status:", response.status_code)
-
-    response.raise_for_status()
-
-    return response.json()
-
-
-@app.get("/test-jerrygm")
-def jerry_projections():
-    response = requests.get(
-        "https://api.jerrygm.com/api/ext/v1/projections",
-        headers={
-            "x-api-key": jerrygm_api_key
-        },
-        params={
-            "horizon": "week",
-            "week": 2,
-        },
-        timeout=15
-    )
-
-    print("JerryGM status: ", response.status_code)
-
-    response.raise_for_status()
-
-    return response.json()
