@@ -28,7 +28,7 @@ def health_check():
     return{"status": "Healthy"}
 
 @app.get("/players")
-def get_players(name: str, position: str = "", team: str = ""):
+def get_players(player_id: str = "", name: str = "", position: str = "", team: str = "", scoring: str = "ppr"):
     global players_cache
 
     if players_cache is None:
@@ -49,38 +49,23 @@ def get_players(name: str, position: str = "", team: str = ""):
         timeout=15,
     )
 
-
     nfl_response.raise_for_status()
 
     current_week = nfl_response.json().get("week")
 
-    jerry_response = requests.get(
-        "https://api.jerrygm.com/api/ext/v1/projections",
-        headers={
-            "x-api-key": jerrygm_api_key
-        },
-        params={
-            "horizon": "week",
-            "week": current_week,
-        },
-        timeout=15
-    )
+    matched_players = []
 
-    print("JerryGM status:", jerry_response.status_code)
-
-    jerry_response.raise_for_status()
-
-    jerry_players = jerry_response.json().get("players")
-
-    results = []
-
-    for player_id, player in players_cache.items():
+    for sleeper_player_id, player in players_cache.items():
         first_name = player.get("first_name") or ""
         last_name = player.get("last_name") or ""
         full_name = f"{first_name} {last_name}".strip()
 
-        name_check = name.lower() in full_name.lower()
-
+        if player_id != "":
+            player_check = sleeper_player_id == player_id
+        else:
+            player_check = name.lower() in full_name.lower()
+        
+        
         position_check = (
             position == ""
             or player.get("position") == position
@@ -92,23 +77,62 @@ def get_players(name: str, position: str = "", team: str = ""):
         )
 
         
-        if name_check and position_check and team_check:
-            projected_points = 0
+        if player_check and position_check and team_check:
 
-            for jerry_player in jerry_players:
-                if jerry_player.get("ids").get("sleeper") == player_id:
-                    projected_points = jerry_player.get("projectedPPG")
-                    break
-                
-            results.append({
-                "player_id": player_id,
+            matched_players.append({
+                "player_id": sleeper_player_id,
                 "name": full_name,
-                "team": player.get("team"),
                 "position": player.get("position"),
-                "projected_points": projected_points
-            })
+                "team": player.get("team")
+                })
 
-            if len(results) >= 20:
+            if len(matched_players) >= 20:
+                break
+
+    print("Matched sleeper players:", matched_players)
+
+    matched_player_names = []
+
+    for matched_player in matched_players:
+        matched_player_names.append(matched_player["name"])
+
+    jerry_response = requests.get(
+        "https://api.jerrygm.com/api/ext/v1/projections",
+        headers={
+            "x-api-key": jerrygm_api_key
+        },
+        params={
+            "horizon": "week",
+            "week": current_week,
+            "scoring": scoring,
+            "names": matched_player_names,
+        },
+        timeout=15
+    )
+
+    print("JerryGM status:", jerry_response.status_code)
+
+    jerry_response.raise_for_status()
+
+    jerry_players = jerry_response.json().get("players")
+
+    print("Jerry players:", jerry_players)
+
+    results = []
+
+    for matched_player in matched_players:
+        for jerry_player in jerry_players:
+            if jerry_player.get("ids").get("sleeper") == matched_player["player_id"]:
+                projected_points = jerry_player.get("projectedPPG")
+
+                results.append({
+                    "player_id": matched_player["player_id"],
+                    "name": matched_player["name"],
+                    "team": matched_player["team"],
+                    "position": matched_player["position"],
+                    "projected_points": projected_points,
+                })
+
                 break
 
     return results
