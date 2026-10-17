@@ -509,6 +509,79 @@ function App() {
     });
   }
 
+  function getEligibleSlots(player: Player){
+    const eligibleSlots: Exclude<TeamSlot, "">[] = [];
+
+    if (player.position === "QB"){
+      eligibleSlots.push("QB");
+    }
+
+    if (player.position === "RB"){
+      eligibleSlots.push("RB1");
+      eligibleSlots.push("RB2");
+      eligibleSlots.push("FLEX");
+    }
+
+    if (player.position === "WR"){
+      eligibleSlots.push("WR1");
+      eligibleSlots.push("WR2");
+      eligibleSlots.push("FLEX");
+    }
+
+    if (player.position === "TE"){
+      eligibleSlots.push("TE");
+      eligibleSlots.push("FLEX");
+    }
+
+    if (player.position === "K"){
+      eligibleSlots.push("K");
+    }
+
+    if (player.position === "DEF"){
+      eligibleSlots.push("DEF");
+    }
+
+    return eligibleSlots;
+  }
+
+  function getStartSitRecommendations(player: Player){
+    const eligibleSlots = getEligibleSlots(player)
+    const recommendations = [];
+
+    for (const slot of eligibleSlots){
+      const starter = team[slot];
+
+      if (starter !== null){
+        if (player.projected_points !== null && starter.projected_points !== null){
+          if (player.projected_points > starter.projected_points){
+
+            recommendations.push({
+              "player": player,
+              "starter": starter,
+              "slot": slot,
+            });
+          }
+        }
+      }
+    }
+
+    return recommendations;
+  }
+
+  function getAllRecommendations(){
+    const allRecommendations = [];
+
+    for (const benchPlayer of team.BENCH){
+      const playerRecommendations = getStartSitRecommendations(benchPlayer);
+
+      for (const recommendation of playerRecommendations){
+        allRecommendations.push(recommendation);
+      }
+    }
+
+    return allRecommendations;
+  }
+
   return (
     <main style={{ padding: "2rem", fontFamily: "Arial" }}>
       <h1>AI Fantasy Coach</h1>
