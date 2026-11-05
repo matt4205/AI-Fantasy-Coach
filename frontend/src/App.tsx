@@ -582,6 +582,9 @@ function App() {
     return allRecommendations;
   }
 
+  const recommendations = getAllRecommendations();
+
+
   return (
     <main style={{ padding: "2rem", fontFamily: "Arial" }}>
       <h1>AI Fantasy Coach</h1>
@@ -704,6 +707,15 @@ function App() {
         moveToBench={movePlayerOnTeam}
         moveBenchToTeam={moveBenchToTeam}
       />
+
+      <div>
+        <h2>Recomendations</h2>
+        {recommendations.map((recommendation) => (
+          <p key = {`${recommendation.player.player_id}-${recommendation.slot}`}>
+            Start {recommendation.player.name} over {recommendation.starter.name} at {recommendation.slot}
+          </p>
+        ))}
+      </div>
     </main>
   );
 }
